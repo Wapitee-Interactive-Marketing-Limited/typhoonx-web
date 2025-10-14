@@ -1,4 +1,5 @@
 {
+  "cleanUrls": true,
   "rewrites": [
     { "source": "/auth/callback", "destination": "/auth/callback/index.html" },
     { "source": "/auth/callback/", "destination": "/auth/callback/index.html" },
@@ -6,6 +7,10 @@
     { "source": "/auth/signup", "destination": "/auth/signup/index.html" },
     { "source": "/auth/signup/", "destination": "/auth/signup/index.html" },
     { "source": "/auth/signup.html", "destination": "/auth/signup/index.html" }
+  ],
+  "redirects": [
+    { "source": "/auth/signup.html", "destination": "/auth/signup", "permanent": true },
+    { "source": "/auth/callback.html", "destination": "/auth/callback", "permanent": true }
   ]
 }
 
