@@ -39,6 +39,8 @@
      * @type {string}
      */
     const SUPABASE_FUNCTION_URL = 'https://potpgjiuqimpbrhdafnz.supabase.co/functions/v1/user_signup';
+    /** @type {string} 允许的邮箱域名 */
+    const ALLOWED_DOMAIN = 'wapitee.io';
 
     /**
      * 简单的邮箱格式校验
@@ -47,6 +49,19 @@
      */
     function isValidEmail(value) {
       return /.+@.+\..+/.test(value);
+    }
+
+    /**
+     * 检查邮箱是否属于允许的域名
+     * @param {string} value
+     * @param {string} allowedDomain
+     * @returns {boolean}
+     */
+    function isAllowedDomain(value, allowedDomain) {
+      const at = value.lastIndexOf('@');
+      if (at < 0) return false;
+      const domain = value.slice(at + 1).toLowerCase();
+      return domain === allowedDomain.toLowerCase();
     }
 
     /**
@@ -78,6 +93,10 @@
 
         if (!isValidEmail(email)) {
           showMessage('请输入有效的邮箱地址。', 'error');
+          return;
+        }
+        if (!isAllowedDomain(email, ALLOWED_DOMAIN)) {
+          showMessage('目前仅支持使用 @wapitee.io 邮箱注册。', 'error');
           return;
         }
         if (password.length < 6) {
