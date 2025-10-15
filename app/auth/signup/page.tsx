@@ -1,6 +1,16 @@
 'use client';
 
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription
+} from '@/components/ui/dialog';
 
 /** 注册接口地址（来自环境变量，便于多环境切换） */
 const SUPABASE_FUNCTION_URL =
@@ -28,6 +38,7 @@ export default function SignupPage() {
   const [confirm, setConfirm] = useState('');
   const [msg, setMsg] = useState<{ type: 'error' | 'success'; text: string } | null>(null);
   const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(true);
 
   /** 提交注册 */
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -73,35 +84,37 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-md p-6">
-      <h3 className="mb-6 text-xl font-semibold">Create your TyphoonX account</h3>
-      <form onSubmit={onSubmit} className="space-y-4" noValidate>
-        <div>
-          <label htmlFor="email" className="block mb-1">Email</label>
-          <input id="email" type="email" className="w-full border rounded px-3 py-2"
-                 value={email} onChange={e => setEmail(e.target.value)}
-                 placeholder="you@wapitee.io" required />
-        </div>
-        <div>
-          <label htmlFor="password" className="block mb-1">Password</label>
-          <input id="password" type="password" className="w-full border rounded px-3 py-2"
-                 value={password} onChange={e => setPassword(e.target.value)}
-                 minLength={6} required />
-        </div>
-        <div>
-          <label htmlFor="confirm" className="block mb-1">Confirm Password</label>
-          <input id="confirm" type="password" className="w-full border rounded px-3 py-2"
-                 value={confirm} onChange={e => setConfirm(e.target.value)}
-                 minLength={6} required />
-        </div>
-        <button type="submit" disabled={loading}
-                className="inline-flex items-center rounded bg-black px-4 py-2 text-white disabled:opacity-60">
-          {loading ? 'Submitting...' : 'Sign up'}
-        </button>
-        {msg && (
-          <p className={msg.type === 'error' ? 'text-red-600 mt-2' : 'text-green-700 mt-2'}>{msg.text}</p>
-        )}
-      </form>
+    <div className="flex min-h-dvh items-center justify-center p-4">
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Create your TyphoonX account</DialogTitle>
+            <DialogDescription>
+              使用你的公司邮箱注册（当前仅支持 <span className="font-medium">@wapitee.io</span>）。
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={onSubmit} className="space-y-4" noValidate>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@wapitee.io" required />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} minLength={6} required />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirm">Confirm Password</Label>
+              <Input id="confirm" type="password" value={confirm} onChange={e => setConfirm(e.target.value)} minLength={6} required />
+            </div>
+            <Button type="submit" disabled={loading} className="w-full">
+              {loading ? 'Submitting...' : 'Sign up'}
+            </Button>
+            {msg && (
+              <p className={msg.type === 'error' ? 'text-sm text-red-600' : 'text-sm text-green-700'}>{msg.text}</p>
+            )}
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
