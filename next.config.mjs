@@ -1,10 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  redirects: async () => [
-    { source: '/auth/signup.html', destination: '/auth/signup', permanent: true },
-    { source: '/auth/callback.html', destination: '/auth/callback', permanent: true },
-    { source: '/', destination: '/auth/callback', permanent: false }
-  ]
+  // 静态导出，避免依赖 Vercel 项目框架设置
+  output: 'export'
 };
 
 export default nextConfig;
