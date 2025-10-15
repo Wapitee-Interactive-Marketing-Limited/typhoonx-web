@@ -1,4 +1,5 @@
 {
-  "outputDirectory": "out"
+  "outputDirectory": "out",
+  "cleanUrls": true
 }
 
