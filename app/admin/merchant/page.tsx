@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { getSupabaseClient } from '@/lib/supabaseClient';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 type Merchant = {
   merchant_id: string;
@@ -27,8 +28,15 @@ export default function MerchantAdminPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [createLoading, setCreateLoading] = useState(false);
+  const [createMsg, setCreateMsg] = useState<string | null>(null);
+  const [newName, setNewName] = useState('');
+  const [newDomain, setNewDomain] = useState('');
+  const [newStatus, setNewStatus] = useState('active');
 
   const listUrl = process.env.NEXT_PUBLIC_MERCHANT_LIST_URL ?? 'https://potpgjiuqimpbrhdafnz.supabase.co/functions/v1/get-merchant-list';
+  const functionsBase = process.env.NEXT_PUBLIC_SUPABASE_FUNCTION_URL ?? 'https://potpgjiuqimpbrhdafnz.supabase.co/functions/v1';
 
   const fetchMerchants = useMemo(() => async () => {
     const accessToken = localStorage.getItem('tpx_access_token');
@@ -107,11 +115,51 @@ export default function MerchantAdminPage() {
     }
   }
 
+  async function onCreateSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setCreateMsg(null);
+    if (!newName.trim()) { setCreateMsg('请输入商户名称'); return; }
+    if (!newDomain.trim()) { setCreateMsg('请输入域名'); return; }
+    const accessToken = localStorage.getItem('tpx_access_token');
+    if (!accessToken) { window.location.assign('/login'); return; }
+    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBvdHBnaml1cWltcGJyaGRhZm56Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg5Nzc0NTgsImV4cCI6MjA3NDU1MzQ1OH0.s-m9tLoZj9nqf81k-fG5AtN-DDKWTUCyTULkAL4POjI';
+
+    setCreateLoading(true);
+    try {
+      const res = await fetch(`${functionsBase}/merchant-manage`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          apikey: anonKey,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ merchant_name: newName.trim(), domain: newDomain.trim(), status: newStatus })
+      });
+      const data = await res.json().catch(() => ({} as any));
+      if (!res.ok || !data?.success) {
+        setCreateMsg(data?.message || '创建失败，请稍后重试');
+        return;
+      }
+      setCreateMsg('创建成功');
+      setNewName(''); setNewDomain(''); setNewStatus('active');
+      setCreateOpen(false);
+      setLoading(true);
+      await fetchMerchants();
+    } catch (err: any) {
+      setCreateMsg(err?.message || '网络错误');
+    } finally {
+      setCreateLoading(false);
+    }
+  }
+
   return (
     <div className="max-w-5xl mx-auto p-6">
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-4 flex items-center justify-between gap-3">
         <h2 className="text-xl font-semibold">Merchants</h2>
-        <Button variant="outline" onClick={onLogout}>Logout</Button>
+        <div className="flex items-center gap-2">
+          <Button onClick={() => setCreateOpen(true)}>Create New</Button>
+          <Button variant="outline" onClick={onLogout}>Logout</Button>
+        </div>
       </div>
       {loading && <p>Loading...</p>}
       {error && <p className="text-red-600">{error}</p>}
@@ -158,6 +206,37 @@ export default function MerchantAdminPage() {
           </Table>
         </div>
       )}
+
+      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Create Merchant</DialogTitle>
+            <DialogDescription>新增商户信息。</DialogDescription>
+          </DialogHeader>
+          <form onSubmit={onCreateSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <label htmlFor="merchant_name" className="text-sm font-medium">Merchant Name</label>
+              <input id="merchant_name" className="w-full border rounded px-3 py-2" value={newName} onChange={e => setNewName(e.target.value)} required />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="domain" className="text-sm font-medium">Domain</label>
+              <input id="domain" className="w-full border rounded px-3 py-2" value={newDomain} onChange={e => setNewDomain(e.target.value)} required />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="status" className="text-sm font-medium">Status</label>
+              <select id="status" className="w-full border rounded px-3 py-2" value={newStatus} onChange={e => setNewStatus(e.target.value)}>
+                <option value="active">active</option>
+                <option value="inactive">inactive</option>
+              </select>
+            </div>
+            {createMsg && <p className="text-sm text-red-600">{createMsg}</p>}
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
+              <Button type="submit" disabled={createLoading}>{createLoading ? 'Creating...' : 'Create'}</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
