@@ -26,7 +26,7 @@ export default function MerchantAdminPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const listUrl = process.env.NEXT_PUBLIC_MERCHANT_LIST_URL;
+  const listUrl = process.env.NEXT_PUBLIC_MERCHANT_LIST_URL ?? 'https://potpgjiuqimpbrhdafnz.supabase.co/functions/v1/get-merchant-list';
 
   const fetchMerchants = useMemo(() => async () => {
     const accessToken = localStorage.getItem('tpx_access_token');
@@ -42,8 +42,8 @@ export default function MerchantAdminPage() {
 
     try {
       const supabase = getSupabaseClient();
-      // apikey 使用 anon key
-      const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+      // apikey 使用 anon key（优先 env，其次内置默认值）
+      const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBvdHBnaml1cWltcGJyaGRhZm56Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg5Nzc0NTgsImV4cCI6MjA3NDU1MzQ1OH0.s-m9tLoZj9nqf81k-fG5AtN-DDKWTUCyTULkAL4POjI';
       const res = await fetch(listUrl, {
         method: 'GET',
         headers: {
