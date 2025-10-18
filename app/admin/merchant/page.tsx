@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 type Merchant = {
   merchant_id: string;
   merchant_name: string;
+  domain?: string;
   status: string;
   created_at: string;
 };
@@ -121,6 +122,7 @@ export default function MerchantAdminPage() {
               <TableRow>
                 <TableHead>Merchant ID</TableHead>
                 <TableHead>Name</TableHead>
+                <TableHead>Domain</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Created At</TableHead>
               </TableRow>
@@ -142,6 +144,7 @@ export default function MerchantAdminPage() {
                     )}
                   </TableCell>
                   <TableCell>{m.merchant_name}</TableCell>
+                  <TableCell>{m.domain || '-'}</TableCell>
                   <TableCell>{m.status}</TableCell>
                   <TableCell>{new Date(m.created_at).toLocaleString()}</TableCell>
                 </TableRow>
