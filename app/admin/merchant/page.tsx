@@ -25,6 +25,7 @@ export default function MerchantAdminPage() {
   const [merchants, setMerchants] = useState<Merchant[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const listUrl = process.env.NEXT_PUBLIC_MERCHANT_LIST_URL ?? 'https://potpgjiuqimpbrhdafnz.supabase.co/functions/v1/get-merchant-list';
 
@@ -72,6 +73,29 @@ export default function MerchantAdminPage() {
     fetchMerchants();
   }, [fetchMerchants]);
 
+  /**
+   * 复制商户 ID 到剪贴板
+   * @param {string} id
+   * @returns {Promise<void>}
+   */
+  async function copyMerchantId(id: string): Promise<void> {
+    try {
+      await navigator.clipboard.writeText(id);
+      setCopiedId(id);
+      setTimeout(() => setCopiedId(null), 1500);
+    } catch {
+      // 兼容性回退
+      const textarea = document.createElement('textarea');
+      textarea.value = id;
+      document.body.appendChild(textarea);
+      textarea.select();
+      try { document.execCommand('copy'); } catch {}
+      document.body.removeChild(textarea);
+      setCopiedId(id);
+      setTimeout(() => setCopiedId(null), 1500);
+    }
+  }
+
   async function onLogout() {
     try {
       const supabase = getSupabaseClient();
@@ -104,7 +128,19 @@ export default function MerchantAdminPage() {
             <TableBody>
               {merchants.map((m) => (
                 <TableRow key={m.merchant_id}>
-                  <TableCell className="font-mono text-sm">{m.merchant_id}</TableCell>
+                  <TableCell className="font-mono text-sm">
+                    <button
+                      type="button"
+                      onClick={() => copyMerchantId(m.merchant_id)}
+                      title="点击复制"
+                      className="underline decoration-dotted underline-offset-4 hover:no-underline focus:outline-none"
+                    >
+                      {m.merchant_id}
+                    </button>
+                    {copiedId === m.merchant_id && (
+                      <span className="ml-2 text-xs text-green-600 align-middle">已复制</span>
+                    )}
+                  </TableCell>
                   <TableCell>{m.merchant_name}</TableCell>
                   <TableCell>{m.status}</TableCell>
                   <TableCell>{new Date(m.created_at).toLocaleString()}</TableCell>
