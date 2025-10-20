@@ -36,7 +36,13 @@ export default function MerchantAdminPage() {
   const [newStatus, setNewStatus] = useState('active');
 
   const listUrl = process.env.NEXT_PUBLIC_MERCHANT_LIST_URL ?? 'https://potpgjiuqimpbrhdafnz.supabase.co/functions/v1/get-merchant-list';
-  const functionsBase = process.env.NEXT_PUBLIC_SUPABASE_FUNCTION_URL ?? 'https://potpgjiuqimpbrhdafnz.supabase.co/functions/v1';
+  const rawFunctionsBase = process.env.NEXT_PUBLIC_MERCHANT_MANAGE_URL || process.env.NEXT_PUBLIC_SUPABASE_FUNCTION_URL || 'https://potpgjiuqimpbrhdafnz.supabase.co/functions/v1';
+  // 规范化 Edge Functions 基础地址，确保包含 /functions/v1
+  const functionsBase = rawFunctionsBase.endsWith('/merchant-manage')
+    ? rawFunctionsBase.replace(/\/merchant-manage$/, '')
+    : rawFunctionsBase.endsWith('/functions/v1')
+      ? rawFunctionsBase
+      : rawFunctionsBase.replace(/\/$/, '') + '/functions/v1';
 
   const fetchMerchants = useMemo(() => async () => {
     const accessToken = localStorage.getItem('tpx_access_token');
@@ -126,7 +132,8 @@ export default function MerchantAdminPage() {
 
     setCreateLoading(true);
     try {
-      const res = await fetch(`${functionsBase}/merchant-manage`, {
+      const endpoint = `${functionsBase}/merchant-manage`;
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -137,7 +144,7 @@ export default function MerchantAdminPage() {
       });
       const data = await res.json().catch(() => ({} as any));
       if (!res.ok || !data?.success) {
-        setCreateMsg(data?.message || '创建失败，请稍后重试');
+        setCreateMsg(data?.message || `创建失败（${res.status}）。请稍后重试`);
         return;
       }
       setCreateMsg('创建成功');
