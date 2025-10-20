@@ -37,7 +37,8 @@ export default function MerchantAdminPage() {
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://potpgjiuqimpbrhdafnz.supabase.co';
   const listUrl = process.env.NEXT_PUBLIC_MERCHANT_LIST_URL ?? `${supabaseUrl.replace(/\/$/, '')}/functions/v1/get-merchant-list`;
-  const manageUrl = process.env.NEXT_PUBLIC_MERCHANT_MANAGE_URL ?? `${supabaseUrl.replace(/\/$/, '')}/functions/v1/merchant_management`;
+  // 创建与查询使用同一函数（支持 GET/POST）：get-merchant-list
+  const manageUrl = process.env.NEXT_PUBLIC_MERCHANT_MANAGE_URL ?? listUrl;
 
   const fetchMerchants = useMemo(() => async () => {
     const accessToken = localStorage.getItem('tpx_access_token');
