@@ -55,6 +55,16 @@ module.exports = {
 			'grid-pattern': 'radial-gradient(#0000000a 1px, transparent 1px)',
 			'grid-pattern-light': 'radial-gradient(#ffffff14 1px, transparent 1px)'
 		},
+		keyframes: {
+			aurora: {
+				'0%': { backgroundPosition: '0% 50%, 0% 50%' },
+				'50%': { backgroundPosition: '100% 50%, 50% 50%' },
+				'100%': { backgroundPosition: '0% 50%, 0% 50%' }
+			}
+		},
+		animation: {
+			aurora: 'aurora 60s linear infinite'
+		},
 		fontFamily: {
 			sans: ['var(--font-nunito-sans)', 'system-ui', 'sans-serif']
 		}
