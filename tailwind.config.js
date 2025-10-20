@@ -50,7 +50,14 @@ module.exports = {
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
   			}
-  		}
+  		},
+		backgroundImage: {
+			'grid-pattern': 'radial-gradient(#0000000a 1px, transparent 1px)',
+			'grid-pattern-light': 'radial-gradient(#ffffff14 1px, transparent 1px)'
+		},
+		fontFamily: {
+			sans: ['var(--font-nunito-sans)', 'system-ui', 'sans-serif']
+		}
   	}
   },
   plugins: [require("tailwindcss-animate")]
