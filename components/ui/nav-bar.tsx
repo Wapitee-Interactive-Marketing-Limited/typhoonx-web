@@ -18,25 +18,7 @@ interface NavBarProps {
 }
 
 export function NavBar({ items, className }: NavBarProps) {
-  const [activeTab, setActiveTab] = useState(items[0].name);
-  const [isMobile, setIsMobile] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  // 在客户端渲染前不显示，避免水合问题
-  if (!mounted) {
-    return null;
-  }
+  const [activeTab, setActiveTab] = useState(items[0]?.name || '');
 
   return (
     <nav
@@ -63,10 +45,7 @@ export function NavBar({ items, className }: NavBarProps) {
                   : "text-black/70 hover:text-black dark:text-white/70 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5",
               )}
             >
-              <span className="hidden md:inline relative z-10">{item.name}</span>
-              <span className="md:hidden relative z-10">
-                <Icon size={18} strokeWidth={2.5} />
-              </span>
+              <span className="relative z-10">{item.name}</span>
               {isActive && (
                 <motion.div
                   layoutId="activeTab"
