@@ -1,3 +1,4 @@
+"use client";
 import { AuroraBackground } from '@/components/ui/aurora-background';
 import { NavBar } from '@/components/ui/nav-bar';
 import { Home as HomeIcon, LogIn, Table } from 'lucide-react';
