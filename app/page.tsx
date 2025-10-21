@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 export default function Home() {
   return (
-    <AuroraBackground>
+    <>
       <NavBar
         items={[
           { name: 'Home', url: '/', icon: HomeIcon },
@@ -14,6 +14,7 @@ export default function Home() {
           { name: 'Merchants', url: '/admin/merchant', icon: Table },
         ]}
       />
+      <AuroraBackground>
       <div className="relative z-10 mx-auto flex min-h-dvh max-w-5xl flex-col items-center justify-center px-6 text-center">
         <h1 className="text-4xl font-bold leading-tight md:text-6xl">
           See how every click turns into revenue
@@ -27,7 +28,8 @@ export default function Home() {
           </Link>
         </div>
       </div>
-    </AuroraBackground>
+      </AuroraBackground>
+    </>
   );
 }
 
