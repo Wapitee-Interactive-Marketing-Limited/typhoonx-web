@@ -1,6 +1,6 @@
 import { AuroraBackground } from '@/components/ui/aurora-background';
 import { NavBar } from '@/components/ui/nav-bar';
-import { Home, LogIn, Table } from 'lucide-react';
+import { Home as HomeIcon, LogIn, Table } from 'lucide-react';
 import Link from 'next/link';
 
 export default function Home() {
@@ -8,7 +8,7 @@ export default function Home() {
     <AuroraBackground>
       <NavBar
         items={[
-          { name: 'Home', url: '/', icon: Home },
+          { name: 'Home', url: '/', icon: HomeIcon },
           { name: 'Login', url: '/login', icon: LogIn },
           { name: 'Merchants', url: '/admin/merchant', icon: Table },
         ]}
